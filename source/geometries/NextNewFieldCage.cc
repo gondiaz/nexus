@@ -35,6 +35,8 @@
 
 #include <CLHEP/Units/SystemOfUnits.h>
 
+#include <G4Orb.hh>
+
 using namespace CLHEP;
 
 
@@ -273,6 +275,8 @@ namespace nexus {
     BuildFieldCage();
     // Tracking Frames
     BuildTrackingFrames();
+    // XeSphere
+    BuildXeSphere();
 
     G4double max_radius = floor(tube_in_diam_/2./el_table_binning_)*el_table_binning_;
 
@@ -281,6 +285,37 @@ namespace nexus {
     // for (G4int i=0; i<el_table_vertices_.size(); ++i) {
     //   std::cout << i << ": "<< el_table_vertices_[i] << std::endl;
     // }
+  }
+
+
+void NextNewFieldCage::BuildXeSphere()
+  {
+
+    active_length_ = cathode_gap_/2. + tube_length_drift_ + dist_tube_el_;
+    active_posz_   = -dist_feedthroughs_/2.  +  active_length_/2.;
+    // vertex = active_gen_->GenerateVertex("BODY_VOL")
+
+    G4double xe_r =  0.5  * mm;
+    G4double pos_x = 0.   * mm;
+    G4double pos_y = 0.   * mm;
+    G4double pos_z = 250. * mm;
+    pos_z = -pos_z + (active_length_/2. + active_posz_);
+
+    G4Orb* xe_sphere_solid =
+      new G4Orb("XE_SPHERE", xe_r);
+
+    G4LogicalVolume* xe_sphere_logic =
+      new G4LogicalVolume(xe_sphere_solid, gas_, "XE_SPHERE");
+
+    new G4PVPlacement(0, G4ThreeVector(pos_x, pos_y, pos_z), xe_sphere_logic,
+		      "XE_SPHERE", mother_logic_, false, 0, false);
+    // new G4PVPlacement(0, G4ThreeVector(pos_x, pos_y, pos_z), xe_sphere_logic,
+		//       "XE_SPHERE", active_logic, false, 0, false);
+
+    if (visibility_) {
+      G4VisAttributes xe_sphere_col = nexus::Red();
+      xe_sphere_logic->SetVisAttributes(xe_sphere_col);
+    }
   }
 
 
@@ -387,7 +422,7 @@ namespace nexus {
                                0., G4ThreeVector (0., 0., active_posz_));
   }
 
-void NextNewFieldCage::BuildBuffer()
+  void NextNewFieldCage::BuildBuffer()
   {
     //G4double length = buffer_length_ - cathode_gap_/2.;
     G4double buffer_posz =

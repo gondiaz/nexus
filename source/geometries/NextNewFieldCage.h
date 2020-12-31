@@ -56,6 +56,7 @@ namespace nexus {
     void BuildFieldCage();
     void BuildAnodeGrid();
     void BuildTrackingFrames();
+    void BuildXeSphere();
 
 
     /// Calculates the vertices for the EL table generation

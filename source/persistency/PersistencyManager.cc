@@ -144,7 +144,7 @@ G4bool PersistencyManager::Store(const G4Event* event)
 
   nevt_++;
 
-  TrajectoryMap::Clear();
+  // TrajectoryMap::Clear();
   StoreCurrentEvent(true);
 
   return true;
